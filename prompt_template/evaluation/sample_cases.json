@@ -1,0 +1,74 @@
+{
+  "evaluation_set_name": "CRF-AI-Agent 基础评测集 v1.0",
+  "description": "用于验证CRF生成Agent在常见临床试验场景下的表现",
+  "total_cases": 3,
+  "cases": [
+    {
+      "case_id": "CASE_001",
+      "disease_area": "肿瘤",
+      "study_phase": "II期",
+      "design_type": "RCT",
+      "input_summary": "一项针对晚期非小细胞肺癌患者的II期随机对照试验，比较PD-1抑制剂A与化疗B的疗效和安全性。主要终点是客观缓解率（ORR），次要终点包括无进展生存期（PFS）、总生存期（OS）及安全性。受试者需经病理确诊，ECOG评分≤1，既往未接受过系统治疗。",
+      "expected_crf_domains": ["DM", "AE", "EX", "LB", "VS", "MH"],
+      "key_fields_expected": [
+        "AESER",
+        "AESTDTC",
+        "AEENDTC",
+        "LBSTRESN",
+        "LBTESTCD",
+        "VSORRES",
+        "MHDESC"
+      ],
+      "logic_checks_expected": [
+        "若AESER='Y'，则AEENDTC不能为空",
+        "若LBSTRESN < 0，则触发质疑",
+        "若VSORRES='DEAD'，则DTHDTC必须存在"
+      ]
+    },
+    {
+      "case_id": "CASE_002",
+      "disease_area": "自身免疫",
+      "study_phase": "III期",
+      "design_type": "RWE",
+      "input_summary": "一项真实世界研究，评估JAK抑制剂在类风湿关节炎患者中的长期安全性和有效性。纳入标准：年龄≥18岁，诊断为RA≥6个月，DAS28>5.1，既往使用过TNFi抑制剂失败。排除标准：活动性感染、妊娠、严重肝肾功能不全。",
+      "expected_crf_domains": ["DM", "AE", "EX", "LB", "VS", "MH", "SUPPLEMENT"],
+      "key_fields_expected": [
+        "AESER",
+        "AESTDTC",
+        "AEENDTC",
+        "LBSTRESN",
+        "LBTESTCD",
+        "VSORRES",
+        "MHDESC",
+        "SUPPDATA"
+      ],
+      "logic_checks_expected": [
+        "若AESER='Y'且AESTDTC > DTHDTC，则触发质疑",
+        "若LBSTRESN > 1000，则标记为异常值",
+        "若SUPPDATA字段有内容，则必须关联对应DM或AE记录"
+      ]
+    },
+    {
+      "case_id": "CASE_003",
+      "disease_area": "慢病",
+      "study_phase": "IIT",
+      "design_type": "IIT",
+      "input_summary": "一项单中心观察性研究，探讨新型口服降糖药在2型糖尿病患者中的血糖波动情况。纳入标准：年龄30-75岁，BMI≥24，HbA1c 7.0%-9.0%，未使用胰岛素。排除标准：严重心血管疾病、肝肾功能衰竭、妊娠。",
+      "expected_crf_domains": ["DM", "AE", "EX", "LB", "VS", "MH"],
+      "key_fields_expected": [
+        "AESER",
+        "AESTDTC",
+        "AEENDTC",
+        "LBSTRESN",
+        "LBTESTCD",
+        "VSORRES",
+        "MHDESC"
+      ],
+      "logic_checks_expected": [
+        "若AESER='Y'，则AEENDTC不能为空",
+        "若LBSTRESN < 3.9 或 > 10.0，则标记为低血糖/高血糖风险",
+        "若VSORRES='HYPO'，则必须记录发生时间"
+      ]
+    }
+  ]
+}
